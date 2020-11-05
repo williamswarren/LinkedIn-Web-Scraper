@@ -10,6 +10,7 @@ import time
 import csv
 import re
 from datetime import date
+from collections import defaultdict
 
 ###setting up the path where I placed the chromedriver executable file### 
 PATH = '/Users/warrenwilliams/Desktop/LinkedIn/chromedriver'
@@ -68,14 +69,56 @@ def scrape_profile():
     #put the current HTML page in a beautiful soup object
     source = driver.page_source
     soup = BeautifulSoup(source,"lxml")
+    
+    '''
+    page = 0
+    while page < 50:
+        for loop to iterate through profiles
+            data structures for holding the information could be a dictionary
+            call the csv writer function when we have a new complete profile
+        page += 1
+        call navigate to new page function
+    '''
     #finding the name, title and links for a profile
+    profiles = defaultdict(list)
+    for name in soup.find_all(class_=re.compile("name actor-name")):
+        print(name)
+        profiles[(name.contents[0])].append("chatbot")
+        #defaultdic[name.get("")]
+    
+    for title in soup.find_all(class_=re.compile("subline-level-1 t-14 t-black t-normal search-result__truncate")):
+        print(title.parent.text)
+     
+
+    for profile in soup.find_all(class_=re.compile("search-result search-result__occluded-item ember-view")):
+        formatting = profile.text.replace("\n","")
+        print(formatting)
+        formatting2 = (formatting.strip()).split()
+        del formatting2[2]
+        key = formatting2[0] + " " + formatting2[1]
+        value = ""
+        for words in range(len(formatting2)):
+            if words > 1:
+                value = " ".join((value, formatting2[words]))
+        value = value.strip()
+        print(key)
+        print(value)
+
+    #for link in soup.find_all(href=re.compile("/in/")):
+    
+
     profile0 = soup.find(class_="search-results-container")
+    print(profile0)
     profile1 = profile0.find(class_="search-result__wrapper")
+    print(profile1)
     profile2 = profile0.find("span",class_="name actor-name")
+    print(profile2)
     profile3 = profile0.find("p",class_="subline-level-1 t-14 t-black t-normal search-result__truncate")
+    print(profile3)
     #adding the links for the page to a list
     profile_links = []
     for link in soup.find_all(href=re.compile("/in/")):
+        print(link)
         profile_links.append(link.get("href"))
     #choosing the first profile link for the first person    
     profile4 = profile_links[0]
@@ -92,17 +135,22 @@ def scrape_profile():
     print("Title/Summary: ",summary)
     print()
     print("Link: ",link)
+
+    nextpage = next_page(2)
 ### Start Scraping the Profiles
 
 ### Navigating to the next page for scraping 
 
 def next_page(page_number):
     '''Navigates to the next page on the LinkedIn search result. Must pass in next page number as a paramater'''
-    pagenumber = str(page_number)
-    pagination = driver.find_element_by_class_name("artdeco-pagination__pages artdeco-pagination__pages--number")
-    button = driver.find_element_by_name(f"Page ",{pagenumber})
-    button.click()
-    time.sleep(3)
+    pagenumber = page_number
+    if pagenumber < 20:
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(1)
+        pagination = driver.find_element_by_xpath('''//button[@class="artdeco-pagination__button artdeco-pagination__button--next artdeco-button artdeco-button--muted artdeco-button--icon-right artdeco-button--1 artdeco-button--tertiary ember-view"]''')
+        time.sleep(2)
+        pagination.click()
+        time.sleep(3)
 
 ### Navigating to the next page for scraping 
 
