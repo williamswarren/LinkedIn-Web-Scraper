@@ -6,6 +6,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import requests
 from bs4 import BeautifulSoup
+import lxml
 import time
 import csv
 import re
@@ -70,69 +71,27 @@ def scrape_profile(pages=10):
     ### outer For/While loop contingent on which page I am on, each iteration of loop does the following chunk of code###
     page_iterator = 1
     while page_iterator < pages:
-
+        
         #put the current HTML page in a beautiful soup object
         source = driver.page_source
-        soup = BeautifulSoup(source,"html.parser")
-    
-        #### TRYING SOMETHING
-        ## Get into respective Div and then call this generator, otherwise it will generate everything on the page
-        select_all = driver.find_elements_by_class_name("neptune-grid two-column")
-        select_all.send_keys(Keys.chord(Keys.COMMAND, "a"))
-        select_all.send_keys(Keys.chord(Keys.COMMAND, "c"))
-        print(soup.get_text())
-        test10 = soup.select(idember)
-        for testractable in test10:
-            for strings in testractable.stripped_strings:
-                print(repr(strings))
-
-        test9 = soup.find_all("div",{"class":"search-result__wrapper"})
-        for strings in test9.stripped_strings:
-                print(repr(strings))
-
-        test6 = soup.find("li",{"class":"search-result search-result__occluded-item ember-view"})
-        test7 = test6.find_next_siblings(("li",{"class":"search-result search-result__occluded-item ember-view"}))
-        for testate in test7:
-            abab = testate.find("div",{"class":"search-result__wrapper"})
-            for strings in abab.stripped_strings:
-                print(repr(strings))
-
-
-        test_container = soup.find("div",{"class":"blended-srp-results-js pt0 pb4 ph0 container-with-shadow artdeco-card"})
-        list_container = test_container.find("ul",{"class":"search-results__list list-style-none"})
-        test_list = list_container.find("li",{"class":"search-result search-result__occluded-item ember-view"})
-        counter = 0
-        while test_list: 
-            for test_profiles in test_list.find_all("div",{"class":"search-result__wrapper"}):
-                for strings in test_profiles.stripped_strings:
-                    print(repr(strings))
-                counter += 1
-                if counter < 5:
-                    test_list = test_list.nextSibling
-                else:
-                    test_list = test_list.nextSibling
-                    test_list = test_list.nextSibling
-        ## Returns all the contents of a persons profile already formatted!!! Just watch out for "distance"    
-        ## Get into respective Div and then call this generator, otherwise it will generate everything on the page
-
-        for trials in soup.nextGenerator():
-            print(trials)
-
-        for test_profiles in soup.find_all("div",{"class":"search-result__wrapper"}):
-            print(test_profiles.text)
-
-        for all_links in soup.find_all("a"):
-            print(all_links)
-        print(soup.get_text())
-
-        #### TRYING SOMETHING
+        soup = BeautifulSoup(source,"lxml")
         
         #finding the name, title and links for a profile
         profiles = defaultdict(list)
+        
         for name in soup.find_all(class_=re.compile("name actor-name")):
-            print(name)
-            profiles[(name.contents[0])].append("https://www.linkedin.com")
-        #defaultdic[name.get("")]
+            for occupation in soup.find_all(class_=re.compile("subline-level-1 t-14 t-black t-normal search-result__truncate")):
+                is_parent = [item for item in occupation.parent.stripped_strings]
+                if is_parent[0] == name.contents[0]:
+                    success = [''.join(occ) for occ in occupation.stripped_strings]
+                    for description in soup.find_all(href=re.compile("/in/")): 
+                        profiles[(name.contents[0])].append(success[0])
+                        profiles[(name.contents[0])].append(("https://www.linkedin.com" + description.attrs['href']))
+                        break
+
+        print(profiles.keys())
+        print(profiles.values())                
+        #Finding the name, title and links for a profile
     
         for title in soup.find_all(class_=re.compile("subline-level-1 t-14 t-black t-normal search-result__truncate")):
             print(title.parent.text)
@@ -192,13 +151,12 @@ def scrape_profile(pages=10):
 def next_page(page_number):
     '''Navigates to the next page on the LinkedIn search result. Must pass in next page number as a paramater'''
     pagenumber = page_number
-    if pagenumber < 20:
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(1)
-        pagination = driver.find_element_by_xpath('''//button[@class="artdeco-pagination__button artdeco-pagination__button--next artdeco-button artdeco-button--muted artdeco-button--icon-right artdeco-button--1 artdeco-button--tertiary ember-view"]''')
-        time.sleep(2)
-        pagination.click()
-        time.sleep(3)
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    time.sleep(1)
+    pagination = driver.find_element_by_xpath('''//button[@class="artdeco-pagination__button artdeco-pagination__button--next artdeco-button artdeco-button--muted artdeco-button--icon-right artdeco-button--1 artdeco-button--tertiary ember-view"]''')
+    time.sleep(2)
+    pagination.click()
+    time.sleep(3)
 
 ### Navigating to the next page for scraping 
 
