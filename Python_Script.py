@@ -61,7 +61,7 @@ def people_tab():
 ### Navigating to the people tab to find people in the industry
 
 ### Start Scraping The Profiles
-def scrape_profile(pages=2):
+def scrape_profile(pages=5):
     '''Default parameter is 5 pages of scraping, can pass any number < 100. Recommended to keep low otherwise Linkedin might flag your account.'''
     #all Linkedin profiles are stored in the variable/identifier: profiles
     page_iterator = 0
@@ -116,7 +116,7 @@ def next_page(page_number):
 
 ### Writing to the CSV File
 def write_csv(profiles):
-    csv_file = open("lead_gen.csv","a")
+    csv_file = open("Lead Generation.csv","a")
     csv_writer = csv.writer(csv_file)
     csv_writer.writerow(["Date","Name","Summary/Title","Link"])
     today = date.today()
@@ -126,19 +126,39 @@ def write_csv(profiles):
     csv_file.close()
 ### Writing to the CSV File
 
+### Ask the user if they want to run a demo or custom scrape
 def main():
-    homepage = homepage_login()
-    searchbar = search_bar()
-    peopletab = people_tab()
-    scrapeprofile = scrape_profile()
-    print("SCRAPE COMPLETED")
+    typeexecution = input("Please let me know how you would like to run the program. \n If trial/demo, please input: demo \n If custom scrape, please input: custom ")
+
+    if typeexecution == "demo":
+        homepage = homepage_login()
+        searchbar = search_bar()
+        peopletab = people_tab()
+        scrapeprofile = scrape_profile()
+        print("SCRAPE COMPLETED")
+
+    elif typeexecution == "custom":
+        email = input("Please enter your email address: ")
+        password = input("Please enter your password: ")
+        subject = input("Please enter the topic/keyword/subject you would like to explore: ")
+        pages = int(input("Please enter the number of pages you want to scrape, e.g. 6. \n Please note the more pages you give, the higher the chance you have Linkedin thinking your account is suspicious: "))
+        print("SCRAPE IN PROGRESS...")
+        homepage = homepage_login(email, password)
+        searchbar = search_bar(subject)
+        peopletab = people_tab()
+        scrapeprofile = scrape_profile(pages)
+        print("SCRAPE COMPLETED :)")
+
+    else:
+        print("Sorry, you entered something that is not valid, please restart the program :(")
+### Ask the user if they want to run a demo or custom scrape
 
 if __name__ == "__main__":
     main()
 
-### Reading CSV back into memory
+### Reading CSV back into memory (dictionary)
 '''
-def read_scraped_profiles(file_name="lead_gen.csv"):
+def read_scraped_profiles(file_name="Lead Generation.csv"):
 scraped_profiles = {}
 read_file = open(file_name,"r")
 csv_contents = csv.reader(read_file)
@@ -149,4 +169,4 @@ for items in csv_contents:
     line_count += 1
 read_file.close()
 '''
-### Reading CSV back into memory
+### Reading CSV back into memory (dictionary)
