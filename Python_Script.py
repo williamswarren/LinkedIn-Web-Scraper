@@ -1,5 +1,5 @@
 '''
-This program scrapes LinkedIn leads & saves them to a CSV file for further follow up by Sales teams
+This program scrapes Linkedin leads & saves them to a CSV file for further follow up by Sales teams.
 '''
 #importing required libraries & modules
 from selenium import webdriver
@@ -21,9 +21,8 @@ driver = webdriver.Chrome(PATH)
 
 
 ### Login Function
-
 def homepage_login(email='sour.monkey.is.great@gmail.com',password='Sourmonkey1996'):
-    '''Navigates to the homepage of LinkedIn.com. Optional Parameters: Email, Password.'''
+    '''Navigates to the homepage of Linkedin.com. Optional Parameters: Email, Password.'''
     driver.get('https://www.linkedin.com')
     sign_in_button = driver.find_element_by_link_text('Sign in')
     sign_in_button.click()
@@ -36,12 +35,11 @@ def homepage_login(email='sour.monkey.is.great@gmail.com',password='Sourmonkey19
     account_login = driver.find_element_by_class_name('login__form_action_container')
     account_login.click()
     time.sleep(4)
-
 ### Login Function
 
 ### Navigating to search bar and searching an industry
 def search_bar(subject="chatbot"):
-    '''Finds the search bar on the main page and searches any subject provided by the caller. Default is chatbot'''
+    '''Finds the search bar on the main page and searches any subject provided by the caller. Default is chatbot.'''
     find_searchbar = driver.find_element_by_xpath('''//div[@class="global-nav__search "]''')
     time.sleep(2)
     find_searchbar.click()
@@ -50,12 +48,11 @@ def search_bar(subject="chatbot"):
     enter_searchbar.send_keys(subject)
     time.sleep(1)
     enter_searchbar.send_keys(Keys.RETURN)
-
 ### Navigating to search bar and searching an industry
 
 ### Navigating to the people tab to find people in the industry
 def people_tab():
-    '''Takes you from the main search results into the people's tab'''
+    '''Takes you from the main search results into the people's tab.'''
     time.sleep(3)
     people_tab = driver.find_element_by_xpath('''//li[@class="search-vertical-filter__filter-item mr2"]''')
     time.sleep(2)
@@ -64,90 +61,48 @@ def people_tab():
 ### Navigating to the people tab to find people in the industry
 
 ### Start Scraping The Profiles
-#print(driver.current_url) gets the current URL of the page that you are on
-#print(driver.page_source) gets all the HTML from the current page
-def scrape_profile(pages=10):
-    '''Default parameter is 10 pages of scraping, can pass any number < 100'''
-    ### outer For/While loop contingent on which page I am on, each iteration of loop does the following chunk of code###
-    page_iterator = 1
+def scrape_profile(pages=2):
+    '''Default parameter is 5 pages of scraping, can pass any number < 100. Recommended to keep low otherwise Linkedin might flag your account.'''
+    #all Linkedin profiles are stored in the variable/identifier: profiles
+    page_iterator = 0
+    profiles = defaultdict(list)
     while page_iterator < pages:
         
         #put the current HTML page in a beautiful soup object
         source = driver.page_source
         soup = BeautifulSoup(source,"lxml")
         
-        #finding the name, title and links for a profile
-        profiles = defaultdict(list)
-        
+        #finding the name, title and url for a profile
         for name in soup.find_all(class_=re.compile("name actor-name")):
-            for occupation in soup.find_all(class_=re.compile("subline-level-1 t-14 t-black t-normal search-result__truncate")):
-                is_parent = [item for item in occupation.parent.stripped_strings]
-                if is_parent[0] == name.contents[0]:
-                    success = [''.join(occ) for occ in occupation.stripped_strings]
-                    for description in soup.find_all(href=re.compile("/in/")): 
-                        profiles[(name.contents[0])].append(success[0])
-                        profiles[(name.contents[0])].append(("https://www.linkedin.com" + description.attrs['href']))
+            for title in soup.find_all(class_=re.compile("subline-level-1 t-14 t-black t-normal search-result__truncate")):
+                #matching up the name and the title, the Linkedin DOM is INSANE!
+                match_up = [item for item in title.parent.stripped_strings]
+                if match_up[0] == name.contents[0]:
+                    is_match = [''.join(occ) for occ in title.stripped_strings]
+                    #finding the correct url/link
+                    for url in soup.find_all(href=re.compile("/in/")):
+                        link = "https://www.linkedin.com"
+                        checker = url.attrs["href"]
+                        link += checker
+                        if link in [item for items in profiles.values() for item in items]:
+                            continue 
+                        profiles[(name.contents[0])].append(is_match[0])
+                        profiles[(name.contents[0])].append(link)
                         break
+                    break
 
         print(profiles.keys())
-        print(profiles.values())                
-        #Finding the name, title and links for a profile
-    
-        for title in soup.find_all(class_=re.compile("subline-level-1 t-14 t-black t-normal search-result__truncate")):
-            print(title.parent.text)
-     
+        print(profiles.values()) 
 
-        for profile in soup.find_all(class_=re.compile("search-result search-result__occluded-item ember-view")):
-            formatting = profile.text.replace("\n","")
-            print(formatting)
-            formatting2 = (formatting.strip()).split()
-            del formatting2[2]
-            key = formatting2[0] + " " + formatting2[1]
-            value = ""
-            for words in range(len(formatting2)):
-                if words > 1:
-                    value = " ".join((value, formatting2[words]))
-            value = value.strip()
-            print(key)
-            print(value)
-
-        #for link in soup.find_all(href=re.compile("/in/")):
-    
-
-        profile0 = soup.find(class_="search-results-container")
-        print(profile0)
-        profile1 = profile0.find(class_="search-result__wrapper")
-        print(profile1)
-        profile2 = profile0.find("span",class_="name actor-name")
-        print(profile2)
-        profile3 = profile0.find("p",class_="subline-level-1 t-14 t-black t-normal search-result__truncate")
-        print(profile3)
-        #adding the links for the page to a list
-        profile_links = []
-        for link in soup.find_all(href=re.compile("/in/")):
-            print(link)
-            profile_links.append(link.get("href"))
-        #choosing the first profile link for the first person    
-        profile4 = profile_links[0]
-        print("This is a list of the profile links: ", profile_links)
-        print()
-        #grabbing only the text from the html and stripping out any whitespace
-        name = profile2.text
-        summary = profile3.text.strip() 
-        link = "https://www.linkedin.com" + profile4 
-        output = write_csv(name,summary,link)
-        #printing to the console the first persons profile information
-        print("Name: ",name)
-        print()
-        print("Title/Summary: ",summary)
-        print()
-        print("Link: ",link)
-        page_iterator += 1
+        #navigating to the next page
         nextpage = next_page(page_iterator)
+        page_iterator += 1
+
+    #writing to the csv
+    write_profiles = write_csv(profiles)    
 ### Start Scraping the Profiles
 
 ### Navigating to the next page for scraping 
-
 def next_page(page_number):
     '''Navigates to the next page on the LinkedIn search result. Must pass in next page number as a paramater'''
     pagenumber = page_number
@@ -157,17 +112,17 @@ def next_page(page_number):
     time.sleep(2)
     pagination.click()
     time.sleep(3)
-
 ### Navigating to the next page for scraping 
 
 ### Writing to the CSV File
-def write_csv(name,summary,link):
+def write_csv(profiles):
     csv_file = open("lead_gen.csv","a")
     csv_writer = csv.writer(csv_file)
     csv_writer.writerow(["Date","Name","Summary/Title","Link"])
     today = date.today()
     todays_date = today.strftime("%d/%m/%y")
-    csv_writer.writerow([todays_date,name,summary,link])
+    for item in profiles.items():
+        csv_writer.writerow([todays_date,item[0],item[1][0],item[1][1]])
     csv_file.close()
 ### Writing to the CSV File
 
@@ -180,3 +135,18 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+### Reading CSV back into memory
+'''
+def read_scraped_profiles(file_name="lead_gen.csv"):
+scraped_profiles = {}
+read_file = open(file_name,"r")
+csv_contents = csv.reader(read_file)
+line_count = 0
+for items in csv_contents:
+    if line_count != 0:
+        scraped_profiles[items[1]] = items[2:4]
+    line_count += 1
+read_file.close()
+'''
+### Reading CSV back into memory
