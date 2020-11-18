@@ -27,37 +27,37 @@ def homepage_login(email='sour.monkey.is.great@gmail.com',password='Sourmonkey19
     sign_in_button = driver.find_element_by_link_text('Sign in')
     sign_in_button.click()
     find_email = driver.find_element_by_name('session_key')
-    time.sleep(2)
+    time.sleep(3)
     find_email.send_keys(email)
     find_password = driver.find_element_by_name('session_password')
-    time.sleep(2)
+    time.sleep(3)
     find_password.send_keys(password)
     account_login = driver.find_element_by_class_name('login__form_action_container')
     account_login.click()
-    time.sleep(4)
+    time.sleep(5)
 ### Login Function
 
 ### Navigating to search bar and searching an industry
 def search_bar(subject="chatbot"):
     '''Finds the search bar on the main page and searches any subject provided by the caller. Default is chatbot.'''
     find_searchbar = driver.find_element_by_xpath('''//div[@class="global-nav__search "]''')
-    time.sleep(2)
+    time.sleep(4)
     find_searchbar.click()
     enter_searchbar = driver.find_element_by_xpath('''//input[@class="search-global-typeahead__input always-show-placeholder"]''')
-    time.sleep(3)
+    time.sleep(4)
     enter_searchbar.send_keys(subject)
-    time.sleep(1)
+    time.sleep(4)
     enter_searchbar.send_keys(Keys.RETURN)
 ### Navigating to search bar and searching an industry
 
 ### Navigating to the people tab to find people in the industry
 def people_tab():
     '''Takes you from the main search results into the people's tab.'''
-    time.sleep(3)
+    time.sleep(4)
     people_tab = driver.find_element_by_xpath('''//li[@class="search-vertical-filter__filter-item mr2"]''')
-    time.sleep(2)
+    time.sleep(4)
     people_tab.click()
-    time.sleep(3)
+    time.sleep(4)
 ### Navigating to the people tab to find people in the industry
 
 ### Start Scraping The Profiles
@@ -128,7 +128,8 @@ def write_csv(profiles):
 
 ### Ask the user if they want to run a demo or custom scrape
 def main():
-    typeexecution = input("Please let me know how you would like to run the program. \n If trial/demo, please input: demo \n If custom scrape, please input: custom ")
+    print("")
+    typeexecution = input("Please let me know how you would like to run the program.\nIf trial/demo, please input: demo\nIf custom scrape, please input: custom\n")
 
     if typeexecution == "demo":
         homepage = homepage_login()
@@ -141,7 +142,7 @@ def main():
         email = input("Please enter your email address: ")
         password = input("Please enter your password: ")
         subject = input("Please enter the topic/keyword/subject you would like to explore: ")
-        pages = int(input("Please enter the number of pages you want to scrape, e.g. 6. \n Please note the more pages you give, the higher the chance you have Linkedin thinking your account is suspicious: "))
+        pages = int(input("Please enter the number of pages you want to scrape, e.g. 6.\nPlease note the more pages you give, the higher the chance you have Linkedin thinking your account is suspicious: "))
         print("SCRAPE IN PROGRESS...")
         homepage = homepage_login(email, password)
         searchbar = search_bar(subject)
