@@ -1,16 +1,17 @@
-Good To Know:
+# Good To Know:
 
-Has not been tested on Windows machines.
-Will only work with Google Chrome, hence you will need Google Chrome installed.
-You might experience issues with the wrong Chromedriver executable, in this case there is comment in the LinkedIn_Script.py file which will direct you to a website for more help.
-You MUST BE LOGGED OUT of your account for this to work.
-Can be run in demo mode and custom mode. Demo is to see how the executable runs and Custom will allow you to run your own custom scrape.
-Only scrapes profiles that have names that are within a few degree connections --- meaning no profiles with "LinkedIn Member" as name.
-If your internet connection lags, LinkedIn lags or LinkedIn hits you with a "Please complete this Recaptcha" the script will unfortunately break. Please complete the Recaptcha and you will need to control-c the file. After doing this, re-run the script and it should work.
+* Has not been tested on Windows machines.
+* Will only work with Google Chrome, hence you will need Google Chrome installed.
+* You might experience issues with the wrong Chromedriver executable, in this case there is comment in the LinkedIn_Script.py file which will direct you to a website for more help.
+* You MUST BE LOGGED OUT of your account for this to work.
+* Can be run in demo mode and custom mode. Demo is to see how the executable runs and Custom will allow you to run your own custom scrape.
+* Only scrapes profiles that have names that are within a few degree connections --- meaning no profiles with "LinkedIn Member" as name.
+* If your internet connection lags, LinkedIn lags or LinkedIn hits you with a "Please complete this Recaptcha" the script will unfortunately break. Please complete the Recaptcha and you will need to control-c the file. After doing this, re-run the script and it should work.
 
 
-Instructions to run the LinkedIn Scrapper:
+# Instructions to run the LinkedIn Scraper:
 
+0. Open Terminal.
 1. git clone https://github.com/williamswarren/Dashbot-Project.git into whichever directory you would like.
 2. Inside the Dashbot-Project you will need to create a virtual environment to install the neccessary dependencies locally.
 3. Open Terminal on Mac and cd Dashbot-Project
