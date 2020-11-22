@@ -12,12 +12,18 @@ import csv
 import re
 from datetime import date
 from collections import defaultdict
+from webdriver_manager.chrome import ChromeDriverManager
 
+#Takes care of obtaining the right driver to run the script
+driver = webdriver.Chrome(ChromeDriverManager().install())
+
+#Previous implementation of obtaining the driver, kept just in case the above fails
+'''
 ###setting up the path where I placed the chromedriver executable file### 
 PATH = '/Users/warrenwilliams/Desktop/LinkedIn/chromedriver'
 driver = webdriver.Chrome(PATH)
 ###you might have some permission erros with Mac OS, this link should fix it https://docwhat.org/upgrading-to-catalina###
-
+'''
 
 
 ### Login Function
@@ -132,10 +138,13 @@ def main():
     typeexecution = input("Please let me know how you would like to run the program.\nIf trial/demo, please input: demo\nIf custom scrape, please input: custom\n")
 
     if typeexecution == "demo":
+        subject = input("Please enter the topic/keyword/subject you would like to explore: ")
+        pages = int(input("Please enter the number of pages you want to scrape, e.g. 6.\nPlease note the more pages you give, the higher the chance you have Linkedin thinking your account is suspicious: "))
+        print("SCRAPE IN PROGRESS...")
         homepage = homepage_login()
-        searchbar = search_bar()
+        searchbar = search_bar(subject)
         peopletab = people_tab()
-        scrapeprofile = scrape_profile()
+        scrapeprofile = scrape_profile(pages)
         print("SCRAPE COMPLETED")
 
     elif typeexecution == "custom":
