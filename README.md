@@ -1,3 +1,5 @@
+![alternativetext](Thumbnail Lead_Generation.png)
+
 # Good To Know:
 
 * Has not been tested on Windows machines.
