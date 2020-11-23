@@ -1,4 +1,4 @@
-![alternativetext](Thumbnail Lead_Generation.png)
+![alternativetext]("Dashbot-Project/Thumbnail Lead_Generation.png")
 
 # Good To Know:
 
