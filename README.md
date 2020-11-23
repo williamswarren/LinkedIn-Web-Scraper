@@ -1,4 +1,4 @@
-![alternativetext](Dashbot-Project/Thumbnail Lead_Generation.png)
+![alt text](https://github.com/williamswarren/Dashbot-Project/blob/master/Thumbnail%20Lead_Generation.png)
 
 # Good To Know:
 
